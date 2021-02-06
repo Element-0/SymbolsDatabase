@@ -1,8 +1,7 @@
 name: Generator
 env:
   bdsd_tag: "%F0%9F%A7%AD"
-  bds_version_win: 1.16.201.02
-  bds_version_linux: 1.16.201.02
+  bds_version: 1.16.201.02
 on:
   push:
 jobs:
@@ -28,8 +27,8 @@ jobs:
             $tmp | Expand-Archive -DestinationPath $OS
             Write-Output "::endgroup::"
           }
-          Get-BDS -OS win -Version ${{ env.bds_version_win }}
-          Get-BDS -OS linux -Version ${{ env.bds_version_linux }}
+          Get-BDS -OS win -Version ${{ env.bds_version }}
+          Get-BDS -OS linux -Version ${{ env.bds_version }}
       - name: Generate database
         run: |
           symutils build-database database.db win\bedrock_server.pdb linux\bedrock_server
@@ -38,3 +37,18 @@ jobs:
         with:
           name: database
           path: database.db
+      - name: Get timestamp
+        id: get-tag
+        run: |
+          $timestamp = Get-Date -AsUTC -Format o | ForEach-Object { $_ -replace ":", "." }
+          echo "::set-output name=tag::${{ env.bds_version }}-$timestamp"
+      - name: Tag snapshot
+        uses: tvdias/github-tagger@v0.0.1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.get-tag.outputs.tag }}
+      - uses: meeDamian/github-release@2.0
+        with:
+          tag: ${{ steps.get-tag.outputs.tag }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          files: database.db
