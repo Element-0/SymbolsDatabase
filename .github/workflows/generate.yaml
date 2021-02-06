@@ -30,3 +30,11 @@ jobs:
           }
           Get-BDS -OS win -Version ${{ env.bds_version_win }}
           Get-BDS -OS linux -Version ${{ env.bds_version_linux }}
+      - name: Generate database
+        run: |
+          symutils build-database database.db win\bedrock_server.pdb linux\bedrock_server
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: database
+          path: database.db
