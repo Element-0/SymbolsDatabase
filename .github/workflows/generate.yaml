@@ -8,7 +8,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Download bdsd
-        run:
+        run: |
           $tmp = New-TemporaryFile | Rename-Item -NewName { $_ -replace 'tmp$', 'zip' } –PassThru
           $url = "https://github.com/codehz/BDSD/releases/download/${{ env.bdsd_tag }}/default.zip"
           Invoke-WebRequest -OutFile $tmp $url
