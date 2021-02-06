@@ -19,10 +19,14 @@ jobs:
       - name: Download BDS
         run: |
           function Get-BDS ($OS, $Version) {
+            Write-Output "::group::Downloading for $OS (version: $Version)"
             $tmp = New-TemporaryFile | Rename-Item -NewName { $_ -replace 'tmp$', 'zip' } –PassThru
             $url = "https://minecraft.azureedge.net/bin-$OS/bedrock-server-$Version.zip"
             Invoke-WebRequest -OutFile $tmp $url
+            Write-Output "::endgroup::"
+            Write-Output "::group::Extracting for $OS (version: $Version)"
             $tmp | Expand-Archive -DestinationPath $OS
+            Write-Output "::endgroup::"
           }
           Get-BDS -OS win -Version ${{ env.bds_version_win }}
           Get-BDS -OS linux -Version ${{ env.bds_version_linux }}
