@@ -1,0 +1,15 @@
+name: Generator
+env:
+  bdsd_tag: "%F0%9F%A7%AD"
+on:
+  push:
+jobs:
+  generate:
+    runs-on: windows-latest
+    steps:
+      - name: Download bdsd
+        run:
+          $tmp = New-TemporaryFile | Rename-Item -NewName { $_ -replace 'tmp$', 'zip' } –PassThru
+          $url = "https://github.com/codehz/BDSD/releases/download/${{ env.bdsd_tag }}/default.zip"
+          Invoke-WebRequest -OutFile $tmp $url
+          $tmp | Expand-Archive -DestinationPath ${{ runner.tool_cache }}\bdsd
