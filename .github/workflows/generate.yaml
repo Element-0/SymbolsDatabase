@@ -13,3 +13,4 @@ jobs:
           $url = "https://github.com/codehz/BDSD/releases/download/${{ env.bdsd_tag }}/default.zip"
           Invoke-WebRequest -OutFile $tmp $url
           $tmp | Expand-Archive -DestinationPath ${{ runner.tool_cache }}\bdsd
+          Get-ChildItem ${{ runner.tool_cache }}\bdsd
