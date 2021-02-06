@@ -1,6 +1,8 @@
 name: Generator
 env:
   bdsd_tag: "%F0%9F%A7%AD"
+  bds_version_win: 1.16.201.02
+  bds_version_linux: 1.16.201.02
 on:
   push:
 jobs:
@@ -13,4 +15,14 @@ jobs:
           $url = "https://github.com/codehz/BDSD/releases/download/${{ env.bdsd_tag }}/default.zip"
           Invoke-WebRequest -OutFile $tmp $url
           $tmp | Expand-Archive -DestinationPath ${{ runner.tool_cache }}\bdsd
-          Get-ChildItem ${{ runner.tool_cache }}\bdsd
+          Write-Output "${{ runner.tool_cache }}\bdsd" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Download BDS
+        run: |
+          function Get-BDS ($OS, $Version) {
+            $tmp = New-TemporaryFile | Rename-Item -NewName { $_ -replace 'tmp$', 'zip' } –PassThru
+            $url = "https://minecraft.azureedge.net/bin-$OS/bedrock-server-$Version.zip"
+            Invoke-WebRequest -OutFile $tmp $url
+            $tmp | Expand-Archive -DestinationPath $OS
+          }
+          Get-BDS -OS win -Version ${{ env.bds_version_win }}
+          Get-BDS -OS linux -Version ${{ env.bds_version_linux }}
