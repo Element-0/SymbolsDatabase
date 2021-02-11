@@ -62,3 +62,13 @@ jobs:
           asset_path: bedrock_server.bds-dump
           asset_name: bedrock_server.bds-dump
           asset_content_type: application/vnd.sqlite3
+      - name: Upload SymbolTokenizer.dll
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ runner.tool_cache }}/bdsd/SymbolTokenizer.dll
+          asset_name: tokenizer.dll
+          asset_content_type: application/octet-stream
